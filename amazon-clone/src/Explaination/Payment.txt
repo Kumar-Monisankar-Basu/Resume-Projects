@@ -1,0 +1,188 @@
+## imports
+
+1. `React` is imported from the React library to enable the usage of React components and features.
+2. `useState` and `useEffect` are imported from the React library to manage state and perform side effects within the component.
+3. `"./Payment.css"` imports the CSS file associated with the `Payment` component for styling purposes.
+4. `useStateValue` is imported from the custom `StateProvider` component, which provides access to the global state using the Context API and a reducer.
+5. `CheckoutProduct` is imported from a local file and is used to render a product item in the payment page.
+6. `Link` and `useHistory` are imported from "react-router-dom" and are used for navigating between pages and managing browser history.
+7. `CardElement`, `useStripe`, and `useElements` are imported from `@stripe/react-stripe-js` and are used for integrating Stripe's card element and accessing Stripe functionalities.
+8. `CurrencyFormat` is imported from "react-currency-format" and is used for formatting currency values.
+9. `getBasketTotal` is imported from a local file called "reducer" and is a helper function to calculate the total value of items in the basket.
+10. `axios` is imported from a local file and is used for making HTTP requests.
+11. `db` is imported from a local file called "firebase" and refers to the Firebase Firestore database instance.
+
+These imports are necessary for the functionality and styling of the `Payment` component.
+
+## const 
+
+Let's break down the code:
+
+1. `const [{ basket, user }, dispatch] = useStateValue();`
+   - This line uses the `useStateValue` hook to access the state and the dispatch function from the global state. It destructures the `basket` and `user` variables from the state object and assigns them to the respective variables. The `dispatch` function is used to dispatch actions to update the state.
+
+2. `const history = useHistory();`
+   - This line uses the `useHistory` hook from the `react-router-dom` library to access the browser's history object. It allows the component to navigate to different routes programmatically.
+
+3. `const stripe = useStripe();`
+   - This line uses the `useStripe` hook from the `@stripe/react-stripe-js` library. It provides access to the Stripe instance, which is used to interact with Stripe's API.
+
+4. `const elements = useElements();`
+   - This line uses the `useElements` hook from the `@stripe/react-stripe-js` library. It provides access to the Elements instance, which is used to render and manage Stripe elements, such as the card element.
+
+5. `const [succeeded, setSucceeded] = useState(false);`
+   - This line declares a state variable `succeeded` and its corresponding setter function `setSucceeded` using the `useState` hook. The initial value of `succeeded` is set to `false`.
+
+6. `const [processing, setProcessing] = useState("");`
+   - This line declares a state variable `processing` and its corresponding setter function `setProcessing` using the `useState` hook. The initial value of `processing` is set to an empty string.
+
+7. `const [error, setError] = useState(null);`
+   - This line declares a state variable `error` and its corresponding setter function `setError` using the `useState` hook. The initial value of `error` is set to `null`.
+
+8. `const [disabled, setDisabled] = useState(true);`
+   - This line declares a state variable `disabled` and its corresponding setter function `setDisabled` using the `useState` hook. The initial value of `disabled` is set to `true`.
+
+9. `const [clientSecret, setClientSecret] = useState(true);`
+   - This line declares a state variable `clientSecret` and its corresponding setter function `setClientSecret` using the `useState` hook. The initial value of `clientSecret` is set to `true`.
+
+These lines of code initialize various state variables used in the `Payment` component. The hooks provide a way to manage and update the state within a functional component.
+
+## useEffect
+
+The code snippet is using the `useEffect` hook to fetch a client secret from the server. Let's break it down:
+
+1. `useEffect(() => { ... }, [basket]);`
+   - This sets up an effect that will be triggered whenever the `basket` variable changes. It means that whenever there are changes in the `basket`, the effect will run again.
+
+2. `const getClientSecret = async () => { ... };`
+   - This is an asynchronous function called `getClientSecret`. It will be used to make a request to the server to retrieve the client secret.
+
+3. `const response = await axios({ ... });`
+   - This line sends a POST request to the server using the Axios library. The request is made to the `/payments/create` endpoint with a query parameter `total` that represents the total amount to be charged. The total is calculated by multiplying the result of `getBasketTotal(basket)` (which calculates the total amount of the items in the basket) by 100. The server is expected to handle this request and return the client secret in the response.
+
+4. `setClientSecret(response.data.clientSecret);`
+   - Once the response is received from the server, the client secret is extracted from the response data and set as the new value for the `clientSecret` state variable using the `setClientSecret` setter function.
+
+5. `getClientSecret();`
+   - This line calls the `getClientSecret` function immediately when the component mounts or when the `basket` variable changes. It triggers the process of fetching the client secret from the server.
+
+In summary, this `useEffect` hook fetches the client secret from the server when the component mounts or when the `basket` variable changes. The client secret is required to authenticate and process payments using the Stripe API.
+
+
+## handlesubmit
+
+1. `event.preventDefault();`
+   - This line prevents the default form submission behavior, ensuring that the form submission does not trigger a page reload.
+
+2. `setProcessing(true);`
+   - This sets the `processing` state variable to `true`, indicating that the payment processing is in progress.
+
+3. `const payload = await stripe.confirmCardPayment(clientSecret, { ... });`
+   - This line uses the `stripe` object to confirm the card payment using the `clientSecret` and the payment details collected from the `CardElement` component. It returns a promise that resolves to a `payload` object containing information about the payment, including a `paymentIntent` property.
+
+4. `.then(({ paymentIntent }) => { ... });`
+   - If the payment confirmation is successful, the `then` method is called with the `paymentIntent` object as its argument. The `paymentIntent` represents the confirmed payment.
+
+5. `db.collection("users").doc(user?.uid).collection("orders").doc(paymentIntent.id).set({ ... });`
+   - This line stores the details of the order in the Firestore database. It creates a new document in the "orders" collection for the current user with the `paymentIntent.id` as the document ID. The order details include the `basket` (items in the basket), `amount` (payment amount), and `created` (payment creation timestamp).
+
+6. `setSucceeded(true); setError(null); setProcessing(false);`
+   - These lines update the state variables. `setSucceeded(true)` sets the `succeeded` state to `true` to indicate that the payment was successful. `setError(null)` clears any previous errors. `setProcessing(false)` sets the `processing` state to `false` to indicate that the payment processing is complete.
+
+7. `dispatch({ type: "EMPTY_BASKET" });`
+   - This line dispatches an action to empty the basket. It updates the state to remove all items from the basket.
+
+8. `history.replace("/orders");`
+   - This line redirects the user to the "/orders" page using the `history` object. It replaces the current URL with the "/orders" URL, effectively navigating to the orders page.
+
+In summary, the `handleSubmit` function handles the submission of the payment form. It confirms the card payment using the Stripe API, stores the order details in the database, updates the state variables, empties the basket, and redirects the user to the orders page.
+
+
+## handlechange
+
+The code snippet defines a function `handleChange` that is called when there is a change event on the `CardElement` component. Let's break it down:
+
+1. `setDisabled(event.empty);`
+   - This line sets the `disabled` state variable based on the `event.empty` property. If the `CardElement` is empty, `event.empty` will be `true`, and the `disabled` state variable will be set to `true`. This is typically used to disable the form submission button when the card details are not provided.
+
+2. `setError(event.error ? event.error.message : "");`
+   - This line sets the `error` state variable based on the `event.error` property. If there is an error in the `CardElement`, `event.error` will be truthy, and the `error` state variable will be set to the error message obtained from `event.error.message`. If there is no error, the `error` state variable will be set to an empty string.
+
+The purpose of this function is to listen for changes in the `CardElement` component and update the state variables `disabled` and `error` accordingly. By doing so, it enables real-time validation and error handling for the card details inputted by the customer.
+
+This code snippet represents the JSX markup for the `Payment` component. Let's break it down:
+
+1. `<div className="payment">...</div>`:
+   - This `<div>` element represents the main container for the payment component.
+
+2. `<div className="payment__container">...</div>`:
+   - This `<div>` element represents a container within the payment component.
+
+3. `<h1>...</h1>`:
+   - This `<h1>` element displays the title "Checkout" with a link to the "/checkout" route and the number of items in the basket.
+
+4. `<div className="payment__section">...</div>`:
+   - This `<div>` element represents a section within the payment component.
+
+5. `<div className="payment__title">...</div>`:
+   - This `<div>` element displays the title for a particular section (e.g., "Delivery Address", "Review items and delivery", "Payment Method").
+
+6. `<div className="payment__address">...</div>`:
+   - This `<div>` element displays the delivery address information.
+
+7. `<div className="payment__items">...</div>`:
+   - This `<div>` element displays the items in the basket for review before payment. It uses the `basket` state to map over each item and render the `CheckoutProduct` component.
+
+8. `<div className="payment__details">...</div>`:
+   - This `<div>` element represents the section for the payment method details.
+
+9. `<form onSubmit={handleSubmit}>...</form>`:
+   - This `<form>` element wraps the payment form and triggers the `handleSubmit` function when submitted.
+
+10. `<CardElement onChange={handleChange} />`:
+    - This component represents the Stripe CardElement, which is used for entering credit card details. It triggers the `handleChange` function when there are changes in the input.
+
+11. `<CurrencyFormat>...</CurrencyFormat>`:
+    - This component is used to format and display the order total amount.
+
+12. `<button disabled={processing || disabled || succeeded}>...</button>`:
+    - This button is used for submitting the payment. It is disabled if `processing`, `disabled`, or `succeeded` is `true`.
+
+13. `{error && <div>{error}</div>}`:
+    - This code conditionally renders an error message when the `error` state is not null.
+
+Overall, this JSX markup represents the structure and content of the payment component, including the delivery address, review items, payment method, and the form for entering payment details.
+
+
+## more detailed payment
+
+Certainly! Let's go through the code in more detail:
+
+1. `<form onSubmit={handleSubmit}>`:
+   - This is an HTML form element that wraps the payment form. It triggers the `handleSubmit` function when the form is submitted.
+
+2. `<CardElement onChange={handleChange} />`:
+   - This is a component provided by the Stripe library. It renders an input field for entering credit card details. The `onChange` event is triggered whenever there are changes in the input, and it calls the `handleChange` function.
+
+3. `<div className="payment__priceContainer">`:
+   - This `<div>` element represents a container for displaying the order total and the "Buy Now" button.
+
+4. `<CurrencyFormat>`:
+   - This component is used to format and display the order total amount. It takes several props:
+   - `renderText`: A function that receives the formatted value as an argument and returns JSX to be rendered. In this case, it renders an `<h3>` element with the text "Order Total: " followed by the formatted value.
+   - `decimalScale`: The number of decimal places to display.
+   - `value`: The value to be formatted, in this case, the total amount from the `getBasketTotal(basket)` function.
+   - `displayType`: The type of display, set to "text" to render the value as text.
+   - `thousandSeparator`: A boolean value indicating whether to include a thousand separator.
+   - `prefix`: The currency symbol prefix, set to "$" for dollars.
+
+5. `<button disabled={processing || disabled || succeeded}>`:
+   - This is a `<button>` element used to submit the payment. It is disabled when `processing`, `disabled`, or `succeeded` is `true`.
+   - `disabled`: A boolean value that determines whether the button is disabled.
+   - `{processing ? <p>Processing</p> : "Buy Now"}`:
+     - This is a conditional rendering based on the `processing` state. If `processing` is `true`, it renders a `<p>` element with the text "Processing". Otherwise, it renders the text "Buy Now".
+
+6. `{error && <div>{error}</div>}`:
+   - This is a conditional rendering that displays an error message if the `error` state is not null. If there is an error, it renders a `<div>` element containing the error message.
+
+In summary, this part of the code represents the payment form, including the credit card input field, order total, and the "Buy Now" button. It also handles conditional rendering for the processing state and error messages.
