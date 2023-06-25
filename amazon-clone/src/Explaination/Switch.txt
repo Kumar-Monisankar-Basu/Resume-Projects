@@ -1,0 +1,9 @@
+The `Switch` component is used in React Router to render only the first `<Route>` or `<Redirect>` that matches the current URL. 
+
+In the given code snippet, the `Switch` component is wrapping the `<Route>` component. The `<Route>` component defines a route with a specified path and the component to render when that path matches the current URL.
+
+In this case, there is only one `<Route>` defined with the `path` prop set to `"/"`. This means that whenever the current URL matches the root path ("/"), the `Home` component will be rendered.
+
+The purpose of the `Switch` component here is to ensure that only one route is rendered at a time. If there were multiple routes defined within the `Switch`, only the first matching route would be rendered, and the rest would be ignored.
+
+Using the `Switch` component helps in managing and organizing the routing logic within a React application, ensuring that the appropriate component is rendered based on the URL path.
