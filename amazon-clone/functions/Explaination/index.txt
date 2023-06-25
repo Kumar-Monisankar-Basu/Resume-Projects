@@ -1,0 +1,48 @@
+*Middleware refers to a software component or a function that sits 
+between the client and server components in a system, Middleware
+functions in Express are defined using the `app.use()` method, which 
+adds the middleware to the middleware stack.
+
+1. `app.use(cors({ origin: true }))`:
+
+   - This line of code enables Cross-Origin Resource Sharing (CORS) for the Express application.
+
+   - CORS is a security mechanism implemented in web browsers that restricts cross-origin requests (requests made from a different domain) to protect against unauthorized access.
+
+   - By using `cors()` middleware with `{ origin: true }`, the server allows requests from all origins, which means it allows requests from any domain. This is useful during development when you want to allow cross-origin requests from different front-end applications or clients.
+
+   - In a production environment, it is recommended to specify the allowed origins explicitly instead of using `{ origin: true }`, to restrict requests to specific domains for security purposes.
+
+2. `app.use(express.json())`:
+
+   - This line of code adds middleware to parse incoming requests with JSON payloads.
+
+   - It enables the server to automatically parse the request body when the content type is set to JSON, and converts it into a JavaScript object that can be accessed in the route handlers.
+
+   - This middleware is essential when dealing with JSON data sent in the request body, such as in POST or PUT requests, as it simplifies the process of extracting data from the request payload.
+
+
+1. Route Handler for the GET request to "/"
+
+- This code sets up a route handler for the GET request to the root path ("/").
+
+- When a GET request is made to the root path, the provided callback function is executed.
+
+- In this case, the callback function sends a response with a status code of 200 (OK) and a response body of "hello world" using the `response.status(200).send("hello world")` method chain.
+
+2. Route Handler for the POST request to "/payments/create"
+
+- This code sets up a route handler for the POST request to the "/payments/create" path.
+
+- When a POST request is made to this path, the provided async callback function is executed.
+
+- The callback function extracts the value of the "total" query parameter from the request using `request.query.total` and assigns it to the `total` variable.
+
+- It then logs a message to the console, indicating that a payment request has been received along with the value of the "total" parameter.
+
+- The code then uses the Stripe library to create a payment intent by calling `stripe.paymentIntents.create()`. It specifies the amount (retrieved from the "total" query parameter) and the currency ("usd").
+
+- Note that the payment intent creation is asynchronous (`await` keyword is used), indicating that it returns a Promise that resolves with the created payment intent.
+
+Overall, this code snippet sets up two route handlers: one for a GET request to the root path ("/") that sends a simple "hello world" response, and another for a POST request to "/payments/create" that handles payment creation using Stripe.
+

@@ -1,0 +1,20 @@
+1. `firebaseApp` is a variable that holds the initialized Firebase app. 
+The `firebase.initializeApp()` function is called with the `firebaseConfig` object passed 
+as a parameter. The `firebaseConfig` object contains the configuration settings for
+connecting to the Firebase project.
+
+2. `db` is a variable that represents the Firestore database instance. 
+`firebaseApp.firestore()` is called to create an instance of the Firestore database 
+associated with the initialized Firebase app.
+
+3. `auth` is a variable that represents the Firebase authentication service. 
+`firebase.auth()` is called to initialize and get an instance of the Firebase 
+authentication service associated with the initialized Firebase app.
+
+4. `export { db, auth }` exports the `db` and `auth` variables, making them available for 
+use in other modules. This allows other modules to import and use the `db` and `auth` instances from this module.
+
+To summarize, this code initializes the Firebase app, creates an instance of the Firestore 
+database, and initializes the Firebase authentication service. The `db` and `auth` 
+variables are exported, allowing other modules to use them for interacting with the 
+Firestore database and performing authentication operations, respectively.

@@ -1,0 +1,79 @@
+1. `import React from 'react'`: This line imports the React library, which is necessary for writing React components and using JSX syntax.
+
+2. `import './Order.css'`: This line imports the CSS file named "Order.css" associated with this component. It allows you to apply specific styles to the elements within this component.
+
+3. `import moment from "moment"`: This line imports the `moment` library, which is a popular JavaScript library for manipulating and formatting dates and times. It allows you to work with dates and times in a more convenient and flexible manner.
+
+4. `import CheckoutProduct from "./CheckoutProduct"`: This line imports the `CheckoutProduct` component from the "./CheckoutProduct" file. It allows you to use the `CheckoutProduct` component within the `Order` component.
+
+5. `import CurrencyFormat from "react-currency-format"`: This line imports the `CurrencyFormat` component from the "react-currency-format" library. It provides a convenient way to format currency values in a desired format, such as adding currency symbols, decimal separators, and thousand separators.
+
+These import statements ensure that the required libraries, components, and styles are available within the `Order` component for its functionality and presentation.
+
+###
+
+1. `<p>{moment.unix(order.data.created).format("MMMM Do YYYY, h:mma")}</p>`: This line uses the `moment` library to format the `created` timestamp of the `order` object into a human-readable date and time format. Here's how it works:
+
+   - `moment.unix(order.data.created)` creates a `moment` object from the UNIX timestamp (`created`) of the `order`.
+   - `.format("MMMM Do YYYY, h:mma")` formats the `moment` object according to the specified format string. In this case, it represents the month (MMMM), day with ordinal suffix (Do), year (YYYY), hour in 12-hour format (h), minutes (mm), and AM/PM indicator (a).
+
+   So, this line displays the creation date and time of the order in a format like "June 24th 2023, 3:30PM".
+
+2. `<p className="order__id"><small>{order.id}</small></p>`: This line displays the `id` of the `order` object inside a `<p>` element with the class name `'order__id'`. The `id` is wrapped in a `<small>` element for styling purposes.
+
+   - `className="order__id"` sets the class name of the `<p>` element to `'order__id'`, which can be used for styling using CSS.
+   - `<small>{order.id}</small>` wraps the `id` value of the `order` object inside a `<small>` element. This is typically used to apply a smaller font size to the text.
+
+   So, this line displays the order ID in a smaller font size within the paragraph element. The class name can be used to style this specific element using CSS.
+
+
+### Some More 
+
+This code block is using the `.map()` function to iterate over the `basket` array within the `order.data` object. It creates a new array of `CheckoutProduct` components based on the items in the basket. Here's how it works:
+
+1. `{order.data.basket?.map(item => (`: This is the start of the `.map()` function, which iterates over each item in the `basket` array. The `?.` syntax is known as optional chaining and ensures that the mapping only occurs if `order.data.basket` is not `null` or `undefined`.
+
+2. `<CheckoutProduct ... />`: This line represents the creation of a `CheckoutProduct` component for each item in the `basket` array. The component is rendered with the following props:
+
+   - `id={item.id}`: Sets the `id` prop of the `CheckoutProduct` component to the `id` value of the current `item`.
+
+   - `title={item.title}`: Sets the `title` prop of the `CheckoutProduct` component to the `title` value of the current `item`.
+
+   - `image={item.image}`: Sets the `image` prop of the `CheckoutProduct` component to the `image` value of the current `item`.
+
+   - `price={item.price}`: Sets the `price` prop of the `CheckoutProduct` component to the `price` value of the current `item`.
+
+   - `rating={item.rating}`: Sets the `rating` prop of the `CheckoutProduct` component to the `rating` value of the current `item`.
+
+   - `hideButton`: Sets the `hideButton` prop of the `CheckoutProduct` component to `true`. This prop might be used to hide a button specific to this component.
+
+3. `))}`: This is the end of the `.map()` function and the closing parenthesis for the mapping code.
+
+So, this code essentially iterates over each item in the `basket` array and creates a `CheckoutProduct` component for each item. The props of the `CheckoutProduct` component are set based on the corresponding item's properties from the `order.data.basket` array.
+
+In the given code, the `basket` array is not explicitly created. Instead, the `basket` array is obtained from the `order.data` object. 
+
+In this code, `order.data.basket` refers to an array that contains the items in the basket. It assumes that the `order` object has a `data` property, and within that, there is a `basket` property that holds the array of items.
+
+The `.map()` function is then used to iterate over each item in the `order.data.basket` array and create a `CheckoutProduct` component for each item.
+
+So, the `basket` array is not explicitly created in this code snippet, but it is obtained from the `order.data.basket` property.
+
+
+### CurrencyFormat
+
+The `CurrencyFormat` component is a third-party component used to format currency values. It takes several props to customize the display of the formatted value:
+
+- `renderText` is a function that receives the formatted value as a parameter and returns the JSX to be rendered. In this case, it renders an `<h3>` element with the formatted value inside, along with the text "Order Total:".
+
+- `decimalScale` specifies the number of decimal places to display. In this case, it is set to 2, indicating that the amount should be displayed with two decimal places.
+
+- `value` represents the value to be formatted. In this case, `order.data.amount / 100` is used, assuming that `order.data.amount` represents the amount in cents. By dividing it by 100, it is converted to the corresponding dollar value.
+
+- `displayType` specifies how the formatted value should be displayed. Here, it is set to `"text"`, indicating that the formatted value should be displayed as text.
+
+- `thousandSeparator` is a boolean prop that determines whether to display a thousand separator (e.g., comma) for large numbers. In this case, it is set to `true`, indicating that a thousand separator should be used.
+
+- `prefix` is a string that represents the currency symbol or any other prefix to be displayed before the value. Here, it is set to `"$"`, indicating that a dollar sign should be used as the prefix.
+
+Overall, the `CurrencyFormat` component helps format the order total amount and renders it as a formatted value with the specified currency symbol and decimal places.

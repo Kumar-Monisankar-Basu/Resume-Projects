@@ -1,0 +1,97 @@
+The `Header` component is defined as a functional component, which means it's a JavaScript function that returns JSX (a mixture of JavaScript and HTML). It is a part of a larger application and serves as the header section of the UI.
+
+
+
+```javascript
+const [{ basket, user }, dispatch] = useStateValue();
+```
+
+This line uses the `useStateValue` hook, which is a custom hook defined in the application. It returns the current state and the dispatch function from the state context, which allows accessing and modifying the global state. The `basket` and `user` variables are destructured from the returned state object.
+
+
+
+```javascript
+const handleAuthenticaton = () => {
+  if (user) {
+    auth.signOut();
+  }
+}
+```
+
+This function is responsible for handling user authentication actions, specifically signing out. It checks if there is a `user` object in the state (indicating that the user is authenticated). If a `user` exists, the `signOut` method from the `auth` object is called. This would initiate the sign-out process for the authenticated user.
+
+Overall, this code sets up the `Header` component and provides access to the global state (`basket` and `user`) through the `useStateValue` hook. It also defines the `handleAuthenticaton` function to handle the sign-out action based on the user's authentication status.
+
+
+### Use State
+
+useState is React Hook that allows you to add state to a functional component. It returns an array with two values: the current state and a function to update it. The Hook takes an initial state value as an argument and returns an updated state value whenever the setter function is called. It can be used like this:
+
+In React, useState can store any type of value, whereas the state in a class component is limited to being an object. This includes primitive data types like string, number, and Boolean, as well as complex data types such as array, object, and function. It can even cover custom data types like class instances.
+
+Basically, anything that can be stored in a JavaScript variable can be stored in a state managed by useState.
+
+
+### Hello User
+
+
+
+```jsx
+<Link to={!user && '/login'}>
+  <div onClick={handleAuthenticaton} className="header__option">
+    <span className="header__optionLineOne">Hello {!user ? 'Guest' : user.email}</span>
+    <span className="header__optionLineTwo">{user ? 'Sign Out' : 'Sign In'}</span>
+  </div>
+</Link>
+```
+
+This code utilizes the React Router's `Link` component, which allows navigation within the application. It creates a link that, when clicked, redirects the user to a specified destination.
+
+The `to` prop of the `Link` component is set using a ternary operator:
+
+```jsx
+to={!user && '/login'}
+```
+
+This conditionally sets the destination of the link based on the `user` state. If there is no user (`!user` evaluates to true), the destination is set to '/login'. Otherwise, if there is a user, the link remains unchanged.
+
+Inside the `Link` component, there is a `div` element with a click event handler:
+
+```jsx
+<div onClick={handleAuthenticaton} className="header__option">
+```
+
+This `div` acts as a clickable option in the header. When clicked, it invokes the `handleAuthenticaton` function.
+
+Within the `div`, there are two `span` elements representing different lines of text:
+
+```jsx
+<span className="header__optionLineOne">Hello {!user ? 'Guest' : user.email}</span>
+<span className="header__optionLineTwo">{user ? 'Sign Out' : 'Sign In'}</span>
+```
+
+These `span` elements display the user's greeting and the sign-in or sign-out text based on the `user` state. If there is no user, the greeting displays "Hello Guest". Otherwise, it displays "Hello" followed by the user's email address. The second line of text displays "Sign Out" if there is a user, or "Sign In" if there is no user.
+
+In summary, this code renders a header option as a clickable `div` that, when clicked, invokes the `handleAuthenticaton` function. The text displayed within the option dynamically changes based on the `user` state, and the `Link` component wraps the entire section, enabling navigation to different destinations based on the `user` state.
+
+### Basket
+
+```jsx
+<span className="header__optionLineTwo header__basketCount">
+  {basket?.length}
+</span>
+```
+
+The `<span>` element is used to display text or content within a line of text. In this case, it is used to display the count of items in the shopping basket.
+
+The `className` attribute assigns CSS class names to the `<span>` element. It has two class names separated by a space: "header__optionLineTwo" and "header__basketCount". These class names are typically used for styling the element using CSS.
+
+The content of the `<span>` element is enclosed within curly braces `{}` and is represented as `{basket?.length}`. 
+
+- `basket` refers to the variable or state that holds the shopping basket data.
+
+- `?.` is the optional chaining operator. It checks if `basket` is not null or undefined before accessing the `length` property. If `basket` is null or undefined, the expression evaluates to `undefined`.
+
+- `length` is a property that represents the number of items in the `basket` array.
+
+Therefore, the code dynamically displays the count of items in the shopping basket by accessing the `length` property of the `basket` variable or state. If `basket` is null or undefined, the count will be displayed as `undefined`.
