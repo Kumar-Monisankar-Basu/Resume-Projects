@@ -901,3 +901,630 @@ export { db, auth };
 
 # 7. Setting up Authentication
 
+### Let’s create a new component, named Login. Now you know the drill! Create two new files, Login.js and Login.css and follow the BEM Convention!
+
+### Let’s setup layout for the Login component. So open Login.js and get the below layout!
+
+```javascript
+import React, { useState } from 'react';
+import './Login.css'
+import { Link, useHistory } from "react-router-dom";
+import { auth } from "./firebase";
+
+function Login() {
+    
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    return (
+        <div className='login'>
+            <Link to='/'>
+                <img
+                    className="login__logo"
+                    src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1024px-Amazon_logo.svg.png' 
+                />
+            </Link>
+
+            <div className='login__container'>
+                <h1>Sign-in</h1>
+
+                <form>
+                    <h5>E-mail</h5>
+                    <input type='text' value={email} onChange={e => setEmail(e.target.value)} />
+
+                    <h5>Password</h5>
+                    <input type='password' value={password} onChange={e => setPassword(e.target.value)} />
+
+                    <button type='submit' className='login__signInButton'>Sign In</button>
+                </form>
+
+                <p>
+                    By signing-in you agree to the AMAZON FAKE CLONE Conditions of Use & Sale. Please
+                    see our Privacy Notice, our Cookies Notice and our Interest-Based Ads Notice.
+                </p>
+
+                <button className='login__registerButton'>Create your Amazon Account</button>
+            </div>
+        </div>
+    )
+}
+
+export default Login
+```
+
+### Before we tear apart this code, let’s go to the Login.css and add styling to it!
+
+```css
+.login {
+    background-color: white;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login__logo {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    object-fit: contain;
+    width: 100px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+.login__container {
+    width: 300px;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    border: 1px solid lightgray;
+    padding: 20px;
+}
+
+.login__container > h1 {
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+.login__container > form > h5 {
+    margin-bottom: 5px;
+}
+
+.login__container > form > input {
+    height: 30px;
+    margin-bottom: 10px;
+    background-color: white;
+    width: 98%;
+  }
+
+.login__container > p {
+    margin-top: 15px;
+    font-size: 12px;
+}
+
+.login__signInButton {
+    background: #f0c14b;
+    border-radius: 2px;
+    width: 100%;
+    height: 30px;
+    border: 1px solid;
+    margin-top: 10px;
+    border-color: #a88734 #9c7e31 #846a29;
+  }
+
+  .login__registerButton {
+    border-radius: 2px;
+    width: 100%;
+    height: 30px;
+    border: 1px solid;
+    margin-top: 10px;
+    border-color: darkgray;
+  }
+  ```
+
+## So here’s how the Login component works
+
+* We have two local states which keep the track of the values of the textboxes.
+
+* Whenever the value of the textboxes change, we change the value of state
+
+### But you cannot visit the page yet! You need to add it to React Router and update the Navbar!
+
+### Go to App.js and enter this route before the main “/” route.
+
+```javascript
+<Route path="/login">
+  <Login />
+</Route>
+```
+
+## Now go to Header.js and use the content.
+
+```javascript
+import React from "react";
+import "./Header.css";
+import SearchIcon from "@material-ui/icons/Search";
+import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
+import { Link } from "react-router-dom";
+import { useStateValue } from "./StateProvider";
+import { auth } from "./firebase";
+
+function Header() {
+  const [{ basket, user }, dispatch] = useStateValue();
+
+  const handleAuthenticaton = () => {
+    if (user) {
+      auth.signOut();
+    }
+  }
+
+  return (
+    <div className="header">
+      <Link to="/">
+        <img
+          className="header__logo"
+          src="http://pngimg.com/uploads/amazon/amazon_PNG11.png"
+        />
+      </Link>
+
+      <div className="header__search">
+        <input className="header__searchInput" type="text" />
+        <SearchIcon className="header__searchIcon" />
+      </div>
+
+      <div className="header__nav">
+        <Link to={!user && '/login'}>
+          <div onClick={handleAuthenticaton} className="header__option">
+            <span className="header__optionLineOne">Hello {!user ? 'Guest' : user.email}</span>
+            <span className="header__optionLineTwo">{user ? 'Sign Out' : 'Sign In'}</span>
+          </div>
+        </Link>
+
+        <Link to='/orders'>
+          <div className="header__option">
+            <span className="header__optionLineOne">Returns</span>
+            <span className="header__optionLineTwo">& Orders</span>
+          </div>
+        </Link>
+        
+
+        <div className="header__option">
+          <span className="header__optionLineOne">Your</span>
+          <span className="header__optionLineTwo">Prime</span>
+        </div>
+
+        <Link to="/checkout">
+          <div className="header__optionBasket">
+            <ShoppingBasketIcon />
+            <span className="header__optionLineTwo header__basketCount">
+              {basket?.length}
+            </span>
+          </div>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+export default Header;
+```
+
+## So here are the things we added.
+
+* We added Links to places we will use later in this article that is orders.
+
+* We check if the user is authenticated. If yes, then the user is greeted else the user has an option to login.
+
+* The handleAuthentication function checks if the user is logged in or not, if else, logs out when the user clicks on the greeting.
+
+## Now if you go to Login option on the Navbar, you should see a page like this.
+
+<p align="center">
+  <img src="img/11.webp" width="300" height="300" />
+</p
+
+### Now let’s go ahead and make this actually functional! So whenever the person clicks on Sign in or Create Amazon account, the data must be sent to Firebase so that they can do their magic.
+
+## In your Login.js ensure you have these contents.
+
+```javascript
+import React, { useState } from 'react';
+import './Login.css'
+import { Link, useHistory } from "react-router-dom";
+import { auth } from "./firebase";
+
+function Login() {
+    const history = useHistory();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const signIn = e => {
+        e.preventDefault();
+
+        auth
+            .signInWithEmailAndPassword(email, password)
+            .then(auth => {
+                history.push('/')
+            })
+            .catch(error => alert(error.message))
+    }
+
+    const register = e => {
+        e.preventDefault();
+
+        auth
+            .createUserWithEmailAndPassword(email, password)
+            .then((auth) => {
+                // it successfully created a new user with email and password
+                if (auth) {
+                    history.push('/')
+                }
+            })
+            .catch(error => alert(error.message))
+    }
+
+    return (
+        <div className='login'>
+            <Link to='/'>
+                <img
+                    className="login__logo"
+                    src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1024px-Amazon_logo.svg.png' 
+                />
+            </Link>
+
+            <div className='login__container'>
+                <h1>Sign-in</h1>
+
+                <form>
+                    <h5>E-mail</h5>
+                    <input type='text' value={email} onChange={e => setEmail(e.target.value)} />
+
+                    <h5>Password</h5>
+                    <input type='password' value={password} onChange={e => setPassword(e.target.value)} />
+
+                    <button type='submit' onClick={signIn} className='login__signInButton'>Sign In</button>
+                </form>
+
+                <p>
+                    By signing-in you agree to the AMAZON FAKE CLONE Conditions of Use & Sale. Please
+                    see our Privacy Notice, our Cookies Notice and our Interest-Based Ads Notice.
+                </p>
+
+                <button onClick={register} className='login__registerButton'>Create your Amazon Account</button>
+            </div>
+        </div>
+    )
+}
+
+export default Login
+```
+
+### Let’s look at some important points here.
+
+* We use e.preventDefault() to prevent the page from reloading because of the form tag.
+
+* When the login button is pressed, the value of the states of textboxes are passed to Firebase to authenticate. Firebase does its magic, and if the authentication is successful returns a promise or throws an error.
+
+* Something similar happens with register. If there is another user with same details, Firebase got you covered.
+
+* The useHistory() is a hook from react-router-dom which helps you to redirect user from the actual code.
+
+## Now we need to set a listener to Firebase so that our React app knows that user is authenticated. Just add this useEffect block in App.js
+
+```javascript
+useEffect(() => {
+    // will only run once when the app component loads...
+
+    auth.onAuthStateChanged((authUser) => {
+      console.log("THE USER IS >>> ", authUser);
+
+      if (authUser) {
+        // the user just logged in / the user was logged in
+
+        dispatch({
+          type: "SET_USER",
+          user: authUser,
+        });
+      } else {
+        // the user is logged out
+        dispatch({
+          type: "SET_USER",
+          user: null,
+        });
+      }
+    });
+  }, []);
+  ```
+## This will setup the React app if the user is Authenticated, and update the state in the reducer.
+
+## Now that authentication is set up, let’s move to the final part, the basket.
+
+# 8. Basket
+
+### Now, we will make two more components named CheckoutProduct and Subtotal. We would be using these components in out Basket. We could also remove items from cart here.
+
+### So let’s make CheckoutProduct first. We would be passing props in so that the component is flexible and can be used anywhere.
+
+```javascript
+import React from 'react';
+import './CheckoutProduct.css'
+import { useStateValue } from "./StateProvider";
+
+function CheckoutProduct({ id, image, title, price, rating, hideButton }) {
+    const [{ basket }, dispatch] = useStateValue();
+
+    const removeFromBasket = () => {
+        // remove the item from the basket
+        dispatch({
+            type: 'REMOVE_FROM_BASKET',
+            id: id,
+        })
+    }
+
+    return (
+        <div className='checkoutProduct'>
+            <img className='checkoutProduct__image' src={image} />
+
+            <div className='checkoutProduct__info'>
+                <p className='checkoutProduct__title'>{title}</p>
+                <p className="checkoutProduct__price">
+                    <small>$</small>
+                    <strong>{price}</strong>
+                </p>
+                <div className="checkoutProduct__rating">
+                    {Array(rating)
+                    .fill()
+                    .map((_, i) => (
+                        <p>🌟</p>
+                    ))}
+                </div>
+                {!hideButton && (
+                    <button onClick={removeFromBasket}>Remove from Basket</button>
+                )}
+            </div>
+        </div>
+    )
+}
+
+export default CheckoutProduct
+```
+
+### Let’s give it a little style. Let’s go to CheckoutProduct.css.
+
+```javascript
+.checkoutProduct {
+    display: flex;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.checkoutProduct__info {
+    padding-left: 20px
+}
+
+.checkoutProduct__info > button {
+    background: #f0c14b;
+    border: 1px solid;
+    margin-top: 10px;
+    border-color: #a88734 #9c7e31 #846a29;
+    color: #111;
+}
+
+.checkoutProduct__image {
+    object-fit: contain;
+    width: 180px;
+    height: 180px;
+  }
+
+.checkoutProduct__rating {
+    display: flex;
+  }
+
+.checkoutProduct__title {
+    font-size: 17px;
+    font-weight: 800;
+}
+```
+
+### Since in this component we have a new reducer command “REMOVE_FROM_BASKET”, let’s add it in reducer.js
+
+```javascript
+export const initialState = {
+  basket: [],
+  user: null
+};
+
+// Selector
+export const getBasketTotal = (basket) => 
+  basket?.reduce((amount, item) => item.price + amount, 0);
+
+const reducer = (state, action) => {
+  console.log(action);
+  switch (action.type) {
+    case "ADD_TO_BASKET":
+      return {
+        ...state,
+        basket: [...state.basket, action.item],
+      };
+    
+    case 'EMPTY_BASKET':
+      return {
+        ...state,
+        basket: []
+      }
+
+    case "REMOVE_FROM_BASKET":
+      const index = state.basket.findIndex(
+        (basketItem) => basketItem.id === action.id
+      );
+      let newBasket = [...state.basket];
+
+      if (index >= 0) {
+        newBasket.splice(index, 1);
+
+      } else {
+        console.warn(
+          `Cant remove product (id: ${action.id}) as its not in basket!`
+        )
+      }
+
+      return {
+        ...state,
+        basket: newBasket
+      }
+    
+    case "SET_USER":
+      return {
+        ...state,
+        user: action.user
+      }
+
+    default:
+      return state;
+  }
+};
+
+export default reducer;
+```
+## Here, we defined the “REMOVE_FROM_BASKET” command for the reducer. This will remove specific product by ID from the Basket.
+
+## Now let’s make the second subcomponent Subtotal. So create the component, follow the BEM convention and let’s code the component.
+
+## First of all we need to install a package which will make our life easier handling currency formats. So write this in your console.
+
+```
+npm install react-currency-format
+```
+
+```javascript
+import React from "react";
+import "./Subtotal.css";
+import CurrencyFormat from "react-currency-format";
+import { useStateValue } from "./StateProvider";
+import { getBasketTotal } from "./reducer";
+import { useHistory } from "react-router-dom";
+
+function Subtotal() {
+  const history = useHistory();
+  const [{ basket }, dispatch] = useStateValue();
+
+  return (
+    <div className="subtotal">
+      <CurrencyFormat
+        renderText={(value) => (
+          <>
+            <p>
+              {/* Part of the homework */}
+              Subtotal ({basket.length} items): <strong>{value}</strong>
+            </p>
+            <small className="subtotal__gift">
+              <input type="checkbox" /> This order contains a gift
+            </small>
+          </>
+        )}
+        decimalScale={2}
+        value={getBasketTotal(basket)} // Part of the homework
+        displayType={"text"}
+        thousandSeparator={true}
+        prefix={"$"}
+      />
+
+      <button>Proceed to Checkout</button>
+    </div>
+  );
+}
+
+export default Subtotal;
+```
+
+## Let’s go ahead and do the CSS too!
+
+```css
+.subtotal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 300px;
+  height: 100px;
+  padding: 20px;
+  background-color: #f3f3f3;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+}
+
+.subtotal__gift {
+  display: flex;
+  align-items: center;
+}
+
+.subtotal__gift > input {
+  margin-right: 5px;
+}
+
+.subtotal > button {
+  background: #f0c14b;
+  border-radius: 2px;
+  width: 100%;
+  height: 30px;
+  border: 1px solid;
+  margin-top: 10px;
+  border-color: #a88734 #9c7e31 #846a29;
+  color: #111;
+}
+```
+
+## The Subtotal component is just basically calculating the total and showing it. Now let’s make the main parent component Checkout. We just have to place the two components we just made.
+
+## So let’s go ahead and edit Checkout.js
+
+```javascript
+import React from "react";
+import "./Checkout.css";
+import Subtotal from "./Subtotal";
+import { useStateValue } from "./StateProvider";
+import CheckoutProduct from "./CheckoutProduct";
+
+function Checkout() {
+  const [{ basket, user }, dispatch] = useStateValue();
+
+  return (
+    <div className="checkout">
+      <div className="checkout__left">
+        <img
+          className="checkout__ad"
+          src="https://images-na.ssl-images-amazon.com/images/G/02/UK_CCMP/TM/OCC_Amazon1._CB423492668_.jpg"
+          alt=""
+        />
+
+        <div>
+          <h3>Hello, {user?.email}</h3>
+          <h2 className="checkout__title">Your shopping Basket</h2>
+
+          {basket.map(item => (
+            <CheckoutProduct
+              id={item.id}
+              title={item.title}
+              image={item.image}
+              price={item.price}
+              rating={item.rating}
+            />
+          ))}
+
+        </div>
+      </div>
+
+      <div className="checkout__right">
+        <Subtotal />
+      </div>
+    </div>
+  );
+}
+
+export default Checkout;
+```
+
+## This is pretty straightforward, it’s rendering out products from the basket and showing the subtotal of all the products.
+
+## Let’s go ahead and style this, let’s edit Checkout.css
+

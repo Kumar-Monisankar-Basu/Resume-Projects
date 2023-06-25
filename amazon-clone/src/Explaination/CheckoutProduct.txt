@@ -111,3 +111,20 @@ The purpose of dispatching this action is to trigger the state update related to
 
 In summary, when `removeFromBasket` is invoked, it dispatches an action with the "REMOVE_FROM_BASKET" type and the corresponding `id` to the reducer. This action informs the reducer to update the state by removing the item with the specified `id` from the basket. The details of how the state is updated would depend on the reducer logic associated with the "REMOVE_FROM_BASKET" action type.
 
+### removeFromBasket
+
+This code snippet is part of a reducer function in a React application that manages the state of a shopping basket. It handles the action type "REMOVE_FROM_BASKET" and updates the basket state accordingly.
+
+Here's a breakdown of what the code does:
+
+1. It finds the index of the item to be removed in the current basket state. It uses the `findIndex` array method to search for the item with an `id` matching `action.id`.
+
+2. It creates a copy of the current basket array using the spread operator (`...state.basket`), so as not to mutate the original state directly.
+
+3. If the item is found (i.e., `index` is greater than or equal to 0), it removes the item from the `newBasket` array using the `splice` method. It removes one element at the `index` position.
+
+4. If the item is not found in the basket (i.e., `index` is -1), it logs a warning message indicating that the item couldn't be removed because it's not in the basket.
+
+5. Finally, it returns a new state object that includes all properties from the current state (`...state`) but with the `basket` property updated to the modified `newBasket` array.
+
+In summary, this code handles the action of removing an item from the shopping basket. It finds the item in the basket, removes it if found, and returns a new state object with the updated basket array.
